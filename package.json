@@ -1,7 +1,7 @@
 {
-  "name": "@tbiegner99/home-automation-app-home",
+  "name": "@tbiegner99/home-automation-navbar",
   "version": "1.0.0",
-  "description": "home automation app home page",
+  "description": "home automation app navbar",
   "main": "lib/index.js",
   "directories": {
     "lib": "src"
