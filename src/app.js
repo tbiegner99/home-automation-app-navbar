@@ -14,7 +14,9 @@ const Main = (props) => {
     React.useEffect(()=>{
       const listener=(evt)=> {
         const {detail}= evt;
-        setAppTitle(detail.title)
+        if(detail) {
+          setAppTitle(detail.title)
+        }
       }
       window.addEventListener('app-changed',listener)
       const cleanup=()=>window.removeEventListener('app-changed',listener)
