@@ -4,31 +4,49 @@ import ReactDOM from 'react-dom';
 import singleSpaReact from 'single-spa-react';
 import NavBar from './NavBar';
 
-const onHomeClick=()=> {
-  window.history.pushState({},'','/')
-}
+const onHomeClick = () => {
+  window.history.pushState({}, '', '/');
+};
 
 const Main = (props) => {
-    const [appTitle,setAppTitle] = React.useState(null)
-
-    React.useEffect(()=>{
-      const listener=(evt)=> {
-        const {detail}= evt;
-        if(detail) {
-          setAppTitle(detail.title)
-        }
-      }
-      window.addEventListener('app-changed',listener)
-      const cleanup=()=>window.removeEventListener('app-changed',listener)
-      return cleanup;
-    
-    })
-
-    
-
-    return <NavBar {...props} appTitle={appTitle} onHomeClick={onHomeClick} />
-
+  const [appTitle, setAppTitle] = React.useState(null);
+  const [navConfig, setNavConfig] = React.useState(null);
+  const appChangeListener = (evt) => {
+    const { detail } = evt;
+    if (detail) {
+      setAppTitle(detail.title);
+    }
   };
+
+  const navUpdateListener = (evt) => {
+    console.log('nav event received');
+    const { detail } = evt;
+    if (detail) {
+      setNavConfig(detail.config);
+    }
+  };
+
+  const clearNavListener = () => {
+    setNavConfig(null);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('nav-update', navUpdateListener);
+    window.addEventListener('nav-clear', clearNavListener);
+    window.addEventListener('app-changed', appChangeListener);
+
+    const evt = new CustomEvent('nav-mounted', {});
+    window.dispatchEvent(evt);
+    const cleanup = () => {
+      window.removeEventListener('app-changed', appChangeListener);
+      window.removeEventListener('nav-clear', clearNavListener);
+      window.removeEventListener('nav-update', navUpdateListener);
+    };
+    return cleanup;
+  });
+
+  return <NavBar {...props} config={navConfig} appTitle={appTitle} onHomeClick={onHomeClick} />;
+};
 
 const reactLifecycles = singleSpaReact({
   React,
